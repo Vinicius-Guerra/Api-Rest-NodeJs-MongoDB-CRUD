@@ -15,8 +15,8 @@ class autorController {
   static listarAutorPorId = async (req, res) => {
     const id = req.params.id;
     try {
-      const autoresResultadoPorId = await autores.findById(id);
-      res.status(200).send(autoresResultadoPorId);
+      const autorResultado = await autores.findById(id);
+      res.status(200).send(autorResultado);
     } catch (erro) {
       res.status(400).send({message: `${erro.message} - Id do autor náo localizado.`});
     }
@@ -25,35 +25,33 @@ class autorController {
   static cadastrarAutor = async (req,res) => {
     let autor = new autores(req.body);
     try {
-      let autorSalvo = await autor.save();
-      res.status(201).send(autorSalvo.toJSON());
+      const autorResultado = await autor.save();
+      res.status(201).send(autorResultado.toJSON());
     } catch (erro) {
       res.status(500).send({message: `${erro.message} - Falha ao cadastrar o autor.`});
     }
   };
 
-  static atualizarAutor = (req, res) => {
+  static atualizarAutor = async (req, res) => {
     const id = req.params.id;
 
-    autores.findByIdAndUpdate(id, {$set: req.body}, (err) => {
-      if(!err) {
-        res.status(200).send({message: "autor atualizado com sucesso."});
-      } else {
-        res.status(500).send({message: err.message});
-      }
-    });
+    try {
+      await autores.findByIdAndUpdate(id, {$set: req.body});
+      res.status(200).send({message: "autor atualizado com sucesso."});
+    } catch (erro) {
+      res.status(500).send({message: erro.message});
+    }
   };
 
-  static excluirAutor = (req,res) => {
+  static excluirAutor = async (req,res) => {
     const id = req.params.id;
 
-    autores.findByIdAndDelete(id, (err) => {
-      if(!err) {
-        res.status(200).send({message: "autor removido com sucesso"});
-      } else {
-        res.status(500).send({message: err.message});
-      }
-    });
+    try {
+      await autores.findByIdAndDelete(id);
+      res.status(200).send({message: "autor removido com sucesso"});
+    } catch (erro) {
+      res.status(500).send({message: erro.message});
+    }
   };
 }
 
