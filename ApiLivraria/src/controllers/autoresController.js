@@ -12,29 +12,24 @@ class autorController {
     }
   };
 
-  static listarAutorPorId = (req, res) => {
+  static listarAutorPorId = async (req, res) => {
     const id = req.params.id;
-
-    autores.findById(id, (err, autores) => {
-      if(err) {
-        res.status(400).send({message: `${err.message} - Id do autor náo localizado.`});
-      } else {
-        res.status(200).send(autores);
-      }
-    });
+    try {
+      const autoresResultadoPorId = await autores.findById(id);
+      res.status(200).send(autoresResultadoPorId);
+    } catch (erro) {
+      res.status(400).send({message: `${erro.message} - Id do autor náo localizado.`});
+    }
   };
 
-  static cadastrarAutor = (req,res) => {
+  static cadastrarAutor = async (req,res) => {
     let autor = new autores(req.body);
-        
-    autor.save((err) => {
-
-      if(err) {
-        res.status(500).send({message: `${err.message} - Falha ao cadastrar o autor.`});
-      } else {
-        res.status(201).send(autor.toJSON());
-      }
-    });
+    try {
+      let autorSalvo = await autor.save();
+      res.status(201).send(autorSalvo.toJSON());
+    } catch (erro) {
+      res.status(500).send({message: `${erro.message} - Falha ao cadastrar o autor.`});
+    }
   };
 
   static atualizarAutor = (req, res) => {
